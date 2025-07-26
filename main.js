@@ -1,4 +1,4 @@
-window.addEventListener('load', () => {
+"use strict";
 // Enhanced game state
 const gameState = {
     scene: null,
@@ -2981,4 +2981,3 @@ function onWindowResize() {
     gameState.renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-    });
