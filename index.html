@@ -579,6 +579,7 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
+        window.addEventListener('load', () => {
         // Enhanced game state
         const gameState = {
             scene: null,
@@ -3550,6 +3551,8 @@
             gameState.camera.updateProjectionMatrix();
             gameState.renderer.setSize(window.innerWidth, window.innerHeight);
         }
+        
+    });
     </script>
 </body>
 </html>
