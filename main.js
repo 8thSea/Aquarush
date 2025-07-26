@@ -126,33 +126,31 @@ document.querySelectorAll('.characterCard').forEach(card => {
 });
 
 // Start game
-document.getElementById('startButton').addEventListener('click', () => {
+document.getElementById('startButton').addEventListener('click', async () => {
     document.getElementById('startScreen').classList.add('hidden');
     document.getElementById('loadingScreen').style.opacity = '1';
 
-    setTimeout(() => {
-        try {
-            initGame();
-            document.getElementById('loadingScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.querySelectorAll('#ui, #minimap, #controls, #leaderboard').forEach(el => {
-                    el.classList.remove('hidden');
-                });
-                gameState.gameStarted = true;
-                animate();
-            }, 1000);
-        } catch (e) {
-            console.error('Failed to start game:', e);
-            alert('Error starting game. Check console for details.');
-        }
-    }, 100);
+    try {
+        await initGame();
+        document.getElementById('loadingScreen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.querySelectorAll('#ui, #minimap, #controls, #leaderboard').forEach(el => {
+                el.classList.remove('hidden');
+            });
+            gameState.gameStarted = true;
+            animate();
+        }, 1000);
+    } catch (e) {
+        console.error('Failed to start game:', e);
+        alert('Error starting game. Check console for details.');
+    }
 });
 
 // Select fish by default
 document.querySelector('[data-type="fish"]').click();
 
-function initGame() {
+async function initGame() {
     // Scene setup with enhanced fog
     gameState.scene = new THREE.Scene();
     gameState.scene.fog = new THREE.FogExp2(0x002040, 0.015);
@@ -190,10 +188,8 @@ function initGame() {
     // Create player
     createAdvancedPlayer();
     
-    // Generate initial world
-    for (let i = 0; i < 20; i++) {
-        generateAdvancedTunnelSegment(i * 25 - 100);
-    }
+    // Generate initial world gradually to avoid blocking
+    await generateInitialWorldAsync(10);
     
     // Setup effects
     createSpeedEffect();
@@ -1041,6 +1037,23 @@ function generateAdvancedTunnelSegment(zPosition) {
     
     gameState.scene.add(segment);
     gameState.tunnelSegments.push(segment);
+}
+
+// Create initial tunnel segments without freezing the browser
+function generateInitialWorldAsync(count) {
+    return new Promise(resolve => {
+        let index = 0;
+        const createNext = () => {
+            generateAdvancedTunnelSegment(index * 25 - 100);
+            index++;
+            if (index < count) {
+                requestAnimationFrame(createNext);
+            } else {
+                resolve();
+            }
+        };
+        requestAnimationFrame(createNext);
+    });
 }
 
 function addTunnelDecorations(segment, radius, zPosition) {
