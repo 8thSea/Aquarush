@@ -13,3 +13,11 @@ _(Replace `your-username` with your GitHub handle)_
    ```bash
    git clone https://github.com/your-username/aqua-rush-game.git
    cd aqua-rush-game
+   ```
+2. Start a local server (optional but recommended):
+   ```bash
+   npx http-server -p 8080
+   ```
+   Then open `http://localhost:8080` in your browser.
+
+The project now uses `index.html`, `style.css`, and `main.js` for clarity. Feel free to edit these files to tweak the look and gameplay.
